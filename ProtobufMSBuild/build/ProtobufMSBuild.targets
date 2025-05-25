@@ -1,6 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">	
 	<Target Name="ProtobufCompile" BeforeTargets="CoreCompile" Inputs="@(Protobuf)" Outputs="$(CompiledProtobufs)">
+		<Warning Text="ProtobufMSBuild is not ready for production. The build will continue. No further action is required." />
+		
 		<ProtobufMSBuild Protobufs="@(Protobuf)" ProtobufCompiledDirectory="$(ProtobufCompiledDirectory)">
 			<Output TaskParameter="CompiledProtobufs" PropertyName="CompiledProtobufs"/>
 		</ProtobufMSBuild>
