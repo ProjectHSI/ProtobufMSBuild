@@ -26,6 +26,13 @@
 		<EnableNETAnalyzers>True</EnableNETAnalyzers>
 		<EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
 		<AnalysisLevel>latest-all</AnalysisLevel>
+		<AssemblyVersion>1.2.0.0</AssemblyVersion>
+		<FileVersion>1.2.0.0</FileVersion>
+		<Version>1.2.1</Version>
+		<SignAssembly>False</SignAssembly>
+		<ProduceReferenceAssembly>False</ProduceReferenceAssembly>
+		<PackageTags>protobuf;msbuild</PackageTags>
+		<PackageReleaseNotes>Auto-include ".proto" files.</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -35,6 +42,12 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <WarningLevel>9999</WarningLevel>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="tasks\**" />
+    <EmbeddedResource Remove="tasks\**" />
+    <None Remove="tasks\**" />
+  </ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Build.Utilities.Core" Version="17.0.0" PrivateAssets="all" ExcludeAssets="Runtime" />

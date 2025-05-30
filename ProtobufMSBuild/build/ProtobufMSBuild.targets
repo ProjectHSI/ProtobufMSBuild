@@ -1,19 +1,23 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">	
-	<Target Name="ProtobufCompile" BeforeTargets="CoreCompile" Inputs="@(Protobuf)" Outputs="$(CompiledProtobufs)">
-		<Warning Text="ProtobufMSBuild is not ready for production. The build will continue. No further action is required." />
-		
-		<ProtobufMSBuild Protobufs="@(Protobuf)" ProtobufCompiledDirectory="$(ProtobufCompiledDirectory)">
-			<Output TaskParameter="CompiledProtobufs" PropertyName="CompiledProtobufs"/>
-		</ProtobufMSBuild>
-		
-		<ItemGroup>
-			<Compile Remove="$(CompiledProtobufs)" />
-			<Compile Include="$(CompiledProtobufs)" />
-		</ItemGroup>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<UsingTask TaskName="$(MSBuildThisFileName).ProtobufMSBuildCompile" AssemblyFile="$(MSBuildThisFileDirectory)..\tasks\netstandard2.0\$(MSBuildThisFileName).dll"/>
+	<UsingTask TaskName="$(MSBuildThisFileName).ProtobufMSBuildDetermine" AssemblyFile="$(MSBuildThisFileDirectory)..\tasks\netstandard2.0\$(MSBuildThisFileName).dll"/>
+
+	<Target Name="ProtobufDetermine" BeforeTargets="ProtobufCompile;CleanUpProtobufs">
+		<ProtobufMSBuildDetermine Protobufs="@(Protobuf)" ProjectRoot="$(MSBuildProjectDirectory)" ProtobufCompiledDirectory="$(ProtobufCompiledDirectory)">
+			<Output TaskParameter="CompiledProtobufs" ItemName="CompiledProtobufs" />
+		</ProtobufMSBuildDetermine>
 	</Target>
 
-	<Target Name="AfterClean">
-		<Delete Files="$(ProtobufCompiledDirectory)" />
+	<Target Name="ProtobufCompile" BeforeTargets="CoreCompile" DependsOnTargets="ProtobufDetermine" Inputs="@(Protobuf)" Outputs="@(CompiledProtobufs)">
+		<Message Importance="high" Text="ProtobufMSBuild comes with absolutely no warranty." />
+
+		<MakeDir Directories="$(ProtobufCompiledDirectory)" />
+
+		<ProtobufMSBuildCompile Protobufs="@(Protobuf)" ProtoCompiler="protoc" ProjectRoot="$(MSBuildProjectDirectory)" ProtobufCompiledDirectory="$(ProtobufCompiledDirectory)" />
+	</Target>
+
+	<Target Name="CleanUpProtobufs" BeforeTargets="Clean" DependsOnTargets="ProtobufDetermine">
+		<Delete Files="$(CompiledProtobufs)" />
 	</Target>
 </Project>
