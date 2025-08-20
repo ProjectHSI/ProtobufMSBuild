@@ -60,6 +60,9 @@ namespace ProtobufMSBuild
 		public string ProtoCompiler { get; set; }
 
 		[Required]
+		public string ProtoLanguage { get; set; }
+
+		[Required]
 		public string ProjectRoot { get; set; }
 
 		[Output]
@@ -83,7 +86,7 @@ namespace ProtobufMSBuild
 					protocProcess.StartInfo.UseShellExecute = false;
 					protocProcess.StartInfo.FileName = ProtoCompiler;
 					protocProcess.StartInfo.CreateNoWindow = true;
-					protocProcess.StartInfo.Arguments = $"-I{ProjectRoot} --csharp_out {ProtobufCompiledDirectory} {System.IO.Path.Combine(ProjectRoot, file)}";
+					protocProcess.StartInfo.Arguments = $"-I{ProjectRoot} --${ProtoLanguage}_out {ProtobufCompiledDirectory} {System.IO.Path.Combine(ProjectRoot, file)}";
 					protocProcess.StartInfo.WorkingDirectory = ProjectRoot;
 					protocProcess.StartInfo.RedirectStandardOutput = true;
 					protocProcess.StartInfo.RedirectStandardError = true;

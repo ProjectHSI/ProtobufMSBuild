@@ -10,5 +10,6 @@
 
 	<PropertyGroup>
 		<ProtobufCompiledDirectory>$(IntermediateOutputPath)protobufOutput</ProtobufCompiledDirectory>
+		<ProtobufLanguage>csharp</ProtobufLanguage>
 	</PropertyGroup>
 </Project>

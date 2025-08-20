@@ -14,7 +14,7 @@
 
 		<MakeDir Directories="$(ProtobufCompiledDirectory)" />
 
-		<ProtobufMSBuildCompile Protobufs="@(Protobuf)" ProtoCompiler="protoc" ProjectRoot="$(MSBuildProjectDirectory)" ProtobufCompiledDirectory="$(ProtobufCompiledDirectory)" />
+		<ProtobufMSBuildCompile Protobufs="@(Protobuf)" ProtoCompiler="protoc" ProtoLangauge="$(ProtobufLanguage)" ProjectRoot="$(MSBuildProjectDirectory)" ProtobufCompiledDirectory="$(ProtobufCompiledDirectory)" />
 	</Target>
 
 	<Target Name="CleanUpProtobufs" BeforeTargets="Clean" DependsOnTargets="ProtobufDetermine">
