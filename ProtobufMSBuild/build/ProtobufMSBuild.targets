@@ -3,18 +3,31 @@
 	<UsingTask TaskName="$(MSBuildThisFileName).ProtobufMSBuildCompile" AssemblyFile="$(MSBuildThisFileDirectory)..\tasks\netstandard2.0\$(MSBuildThisFileName).dll"/>
 	<UsingTask TaskName="$(MSBuildThisFileName).ProtobufMSBuildDetermine" AssemblyFile="$(MSBuildThisFileDirectory)..\tasks\netstandard2.0\$(MSBuildThisFileName).dll"/>
 
-	<Target Name="ProtobufDetermine" BeforeTargets="ProtobufCompile;CleanUpProtobufs">
-		<ProtobufMSBuildDetermine Protobufs="@(Protobuf)" ProjectRoot="$(MSBuildProjectDirectory)" ProtobufCompiledDirectory="$(ProtobufCompiledDirectory)">
+	<ItemGroup Label="AutoProtobufInclude" Condition="'$(NoProtobufMSBuildAutoInclude)' != 'true'">
+		<Protobuf Include="**/*.proto">
+			<ProtobufLanguage>csharp</ProtobufLanguage>
+		</Protobuf>
+	</ItemGroup>
+
+	<Target Name="ProtobufDetermine">
+		<PropertyGroup>
+			<ProtobufCompiledDirectory Condition="'$(ProtobufCompiledDirectory)' == ''">$(IntermediateOutputPath)protobufOutput</ProtobufCompiledDirectory>
+		</PropertyGroup>
+
+		<ProtobufMSBuildDetermine Protobufs="@(Protobuf)" ProtobufLanguage="%(ProtobufLanguage)" ProjectRoot="$(MSBuildProjectDirectory)" ProtobufCompiledDirectory="$(ProtobufCompiledDirectory)">
 			<Output TaskParameter="CompiledProtobufs" ItemName="CompiledProtobufs" />
+			<Output Condition="'$(NoProtobufMSBuildAutoIncludeCompile)' != 'true'" TaskParameter="CSCompiledProtobufsAsTaskItem" ItemName="Compile" />
 		</ProtobufMSBuildDetermine>
 	</Target>
 
-	<Target Name="ProtobufCompile" BeforeTargets="CoreCompile" DependsOnTargets="ProtobufDetermine" Inputs="@(Protobuf)" Outputs="@(CompiledProtobufs)">
-		<Message Importance="high" Text="ProtobufMSBuild comes with absolutely no warranty." />
+	<Target Name="ProtobufCompile" BeforeTargets="PreBuildEvent" DependsOnTargets="ProtobufDetermine" Inputs="@(Protobuf)" Outputs="@(CompiledProtobufs)">
+		<PropertyGroup>
+			<ProtobufCompiledDirectory Condition="'$(ProtobufCompiledDirectory)' == ''">$(IntermediateOutputPath)ProtobufOutput</ProtobufCompiledDirectory>
+		</PropertyGroup>
 
 		<MakeDir Directories="$(ProtobufCompiledDirectory)" />
 
-		<ProtobufMSBuildCompile Protobufs="@(Protobuf)" ProtoCompiler="protoc" ProtoLangauge="$(ProtobufLanguage)" ProjectRoot="$(MSBuildProjectDirectory)" ProtobufCompiledDirectory="$(ProtobufCompiledDirectory)" />
+		<ProtobufMSBuildCompile Protobufs="@(Protobuf)" ProtobufLanguage="%(ProtobufLanguage)" ProtoCompiler="protoc" ProjectRoot="$(MSBuildProjectDirectory)" ProtobufCompiledDirectory="$(ProtobufCompiledDirectory)" />
 	</Target>
 
 	<Target Name="CleanUpProtobufs" BeforeTargets="Clean" DependsOnTargets="ProtobufDetermine">
